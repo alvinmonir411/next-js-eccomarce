@@ -22,7 +22,7 @@ export default function AdminLayout({ children }) {
 
   if (roleloading) return <Loader />;
   if (!user || role !== "admin") {
-    router.push("/"); // redirect if not admin
+    router.push("/");
     return null;
   }
 
