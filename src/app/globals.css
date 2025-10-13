@@ -1,0 +1,68 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@plugin "daisyui/theme" {
+  name: "mytheme";
+  default: true; /* set as default */
+  prefersdark: false; /* set as default dark mode (prefers-color-scheme:dark) */
+  color-scheme: light; /* color of browser-provided UI */
+
+  /* Background & Base */
+  --color-base-100: #ffffff; /* main background */
+  --color-base-200: #f8f8f8; /* section background */
+  --color-base-300: #e5e5e5; /* cards, containers */
+  --color-base-content: #1f2937; /* main text */
+
+  /* Primary Colors */
+  --color-primary: #3b82f6; /* buttons, links */
+  --color-primary-content: #ffffff;
+
+  /* Secondary Colors */
+  --color-secondary: #f59e0b; /* badges, highlights */
+  --color-secondary-content: #1f2937;
+
+  /* Accent Colors */
+  --color-accent: #3b82f6; /* add-to-cart, CTA */
+  --color-accent-content: #ffffff;
+
+  /* Neutral Colors */
+  --color-neutral: #6b7280; /* borders, card outlines */
+  --color-neutral-content: #ffffff;
+
+  /* Informational Colors */
+  --color-info: #3b82f6;
+  --color-info-content: #ffffff;
+
+  --color-success: #10b981;
+  --color-success-content: #ffffff;
+
+  --color-warning: #f59e0b;
+  --color-warning-content: #1f2937;
+
+  --color-error: #ef4444;
+  --color-error-content: #ffffff;
+
+  /* Fonts */
+  --font-sans: "Inter", sans-serif;
+  --font-heading: "Poppins", sans-serif;
+
+  /* Border radius */
+  --radius-selector: 1rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --radius-btn: 0.5rem;
+
+  /* Shadows */
+  --shadow-card: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-button: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  /* Gradients (for banners, hero sections) */
+  --gradient-primary: linear-gradient(to right, #3b82f6, #60a5fa);
+}
+
+.hovarText {
+  @apply hover:text-blue-500;
+}
+.h1 {
+  @apply text-xl md:text-4xl lg:text-6xl font-bold text-center p-2 md:p-6;
+}
