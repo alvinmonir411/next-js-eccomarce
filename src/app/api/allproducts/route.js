@@ -20,8 +20,6 @@ export async function GET(req) {
 
     // Fetch products (optionally filter by email)
     const allProducts = await juyelarycollections.find({}).toArray();
-    // If you want to filter by email:
-    // const allProducts = await juyelarycollections.find({ email }).toArray();
 
     return new Response(JSON.stringify(allProducts), { status: 200 });
   } catch (err) {

@@ -4,12 +4,17 @@ import { useAuth } from "@/app/context/AuthContext";
 import React, { useEffect, useState } from "react";
 import api from "@/app/Utilitis/axiosInstance";
 import Loader from "@/app/Utilitis/Loader";
+import ProductViewModal from "@/app/Utilitis/ProductViewModal";
 
 const page = () => {
   const { user, loading: userLoading } = useAuth();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // For modal
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (!user?.email) return;
@@ -32,6 +37,16 @@ const page = () => {
     fetchProducts();
   }, [user]);
 
+  const handleView = (product) => {
+    setSelectedProduct(product); // ✅ Set the clicked product
+    setShowModal(true); // ✅ Open modal
+  };
+
+  const closeModal = () => {
+    setSelectedProduct(null); // ✅ Clear selected product
+    setShowModal(false); // ✅ Close modal
+  };
+
   if (userLoading || loading) return <Loader />;
   if (error) return <p className="text-red-500 text-center mt-10">{error}</p>;
 
@@ -42,30 +57,14 @@ const page = () => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Image
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Title
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Category
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Price
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Stock
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Sold
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Rating
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
+              <th>Image</th>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Sold</th>
+              <th>Rating</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -74,32 +73,26 @@ const page = () => {
                 key={product._id.$oid}
                 className="hover:bg-gray-50 transition"
               >
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td>
                   <img
                     src={product.images[0]}
                     alt={product.title}
                     className="w-16 h-16 object-cover rounded-lg"
                   />
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-800">
-                  {product.title}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                  {product.category}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-semibold">
-                  {product.price.$numberInt} BDT
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                  {product.stockQuantity}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                  {product.purchaseCount}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-yellow-500 font-semibold">
-                  ⭐ {product.rating}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td>{product.title}</td>
+                <td>{product.category}</td>
+                <td>{product.price.$numberInt} BDT</td>
+                <td>{product.stockQuantity}</td>
+                <td>{product.purchaseCount}</td>
+                <td>⭐ {product.rating}</td>
+                <td>
+                  <button
+                    onClick={() => handleView(product)} // ✅ Here’s the magic
+                    className="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition mr-2"
+                  >
+                    View
+                  </button>
                   <button className="bg-gray-900 text-white px-3 py-1 rounded-lg hover:bg-gray-800 transition mr-2">
                     Edit
                   </button>
@@ -112,6 +105,13 @@ const page = () => {
           </tbody>
         </table>
       </div>
+
+      {/* ✅ Modal Component */}
+      <ProductViewModal
+        product={selectedProduct}
+        isOpen={showModal}
+        onClose={closeModal}
+      />
     </div>
   );
 };
