@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const ProductModal = ({ product, isOpen, onClose }) => {
   const [selectedImage, setSelectedImage] = useState(product?.images[0] || "");
-  const [activeTab, setActiveTab] = useState("Details"); // Tabs: Details / Reviews / Shipping
+  const [activeTab, setActiveTab] = useState("Details"); 
 
   if (!isOpen || !product) return null;
 

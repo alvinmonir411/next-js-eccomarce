@@ -13,7 +13,7 @@ api.interceptors.request.use(
     if (getToken) {
       try {
         const token = await getToken();
-        console.log(token);
+
         if (token) config.headers.Authorization = `Bearer ${token}`;
       } catch (err) {
         console.error("Axios token error:", err);

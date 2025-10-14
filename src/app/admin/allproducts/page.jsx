@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import api from "@/app/Utilitis/axiosInstance";
 import Loader from "@/app/Utilitis/Loader";
 import ProductViewModal from "@/app/Utilitis/ProductViewModal";
+import EditProductModal from "@/app/Utilitis/EditProductModal";
 
 const page = () => {
   const { user, loading: userLoading } = useAuth();
@@ -15,6 +16,10 @@ const page = () => {
   // For modal
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showModal, setShowModal] = useState(false);
+
+  // for editProduct
+  const [editProduct, setEditProduct] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
   useEffect(() => {
     if (!user?.email) return;
@@ -37,14 +42,22 @@ const page = () => {
     fetchProducts();
   }, [user]);
 
+  const handleEdit = (product) => {
+    setEditProduct(product);
+    setEditModalOpen(true);
+  };
+  const closededitmodal = () => {
+    setEditModalOpen(false);
+  };
+
   const handleView = (product) => {
-    setSelectedProduct(product); // ✅ Set the clicked product
-    setShowModal(true); // ✅ Open modal
+    setSelectedProduct(product);
+    setShowModal(true);
   };
 
   const closeModal = () => {
-    setSelectedProduct(null); // ✅ Clear selected product
-    setShowModal(false); // ✅ Close modal
+    setSelectedProduct(null);
+    setShowModal(false);
   };
 
   if (userLoading || loading) return <Loader />;
@@ -88,12 +101,15 @@ const page = () => {
                 <td>⭐ {product.rating}</td>
                 <td>
                   <button
-                    onClick={() => handleView(product)} // ✅ Here’s the magic
+                    onClick={() => handleView(product)}
                     className="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition mr-2"
                   >
                     View
                   </button>
-                  <button className="bg-gray-900 text-white px-3 py-1 rounded-lg hover:bg-gray-800 transition mr-2">
+                  <button
+                    onClick={() => handleEdit(product)}
+                    className="bg-gray-900 text-white px-3 py-1 rounded-lg hover:bg-gray-800 transition mr-2"
+                  >
                     Edit
                   </button>
                   <button className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition">
@@ -111,6 +127,11 @@ const page = () => {
         product={selectedProduct}
         isOpen={showModal}
         onClose={closeModal}
+      />
+      <EditProductModal
+        product={editProduct}
+        modalopen={editModalOpen}
+        closed={closededitmodal}
       />
     </div>
   );
