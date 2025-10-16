@@ -7,17 +7,17 @@ import Loader from "@/app/Utilitis/Loader";
 import ProductViewModal from "@/app/Utilitis/ProductViewModal";
 import EditProductModal from "@/app/Utilitis/EditProductModal";
 
-const page = () => {
+const Page = () => {
   const { user, loading: userLoading } = useAuth();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // For modal
+  // For viewing modal
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  // for editProduct
+  // For editing modal
   const [editProduct, setEditProduct] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
 
@@ -46,13 +46,17 @@ const page = () => {
     setEditProduct(product);
     setEditModalOpen(true);
   };
-  const closededitmodal = () => {
-    setEditModalOpen(false);
-  };
 
   const handleView = (product) => {
     setSelectedProduct(product);
     setShowModal(true);
+  };
+
+  const handleUpdate = (updatedProduct) => {
+    // ✅ update it everywhere locally
+    setProducts((prev) =>
+      prev.map((p) => (p._id.$oid === updatedProduct._id ? updatedProduct : p))
+    );
   };
 
   const closeModal = () => {
@@ -66,6 +70,7 @@ const page = () => {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">Admin Dashboard</h1>
+
       <div className="overflow-x-auto bg-white rounded-xl shadow">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-100">
@@ -122,19 +127,22 @@ const page = () => {
         </table>
       </div>
 
-      {/* ✅ Modal Component */}
+      {/* View Modal */}
       <ProductViewModal
         product={selectedProduct}
         isOpen={showModal}
         onClose={closeModal}
       />
+
+      {/* Edit Modal */}
       <EditProductModal
-        product={editProduct}
         modalopen={editModalOpen}
-        closed={closededitmodal}
+        product={editProduct}
+        closed={() => setEditModalOpen(false)}
+        onUpdate={handleUpdate} // ✅ here's the sync magic
       />
     </div>
   );
 };
 
-export default page;
+export default Page;

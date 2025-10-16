@@ -1,72 +1,80 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { X } from "lucide-react";
+import api from "@/app/Utilitis/axiosInstance";
 
-const EditProductModal = ({ modalopen, product, closed }) => {
-  const [formData, setFormData] = useState({});
-
-  useEffect(() => {
-    if (product) {
-      setFormData({
-        title: product.title || "",
-        subtitle: product.subtitle || "",
-        description: product.description || "",
-        price: product.price?.$numberInt || "",
-        offerPrice: product.offerPrice?.$numberInt || "",
-        currency: product.currency || "",
-        sku: product.sku || "",
-        brand: product.brand || "",
-        category: product.category || "",
-        model: product.model || "",
-        height: product.height || "",
-        width: product.width || "",
-        length: product.length || "",
-        weight: product.weight || "",
-        gender: product.gender || "",
-        materials: product.materials?.join(", ") || "",
-        color: product.color || "",
-        diamondWeight: product.diamondWeight || "",
-        certification: product.certification || "",
-        warranty: product.warranty || "",
-        availability: product.availability || "",
-        stockQuantity: product.stockQuantity?.$numberInt || "",
-        purchaseCount: product.purchaseCount?.$numberInt || "",
-        careInstructions: product.careInstructions || "",
-        images: product.images?.join(", ") || "",
-        tags: product.tags?.join(", ") || "",
-        rating: product.rating?.$numberDouble || "",
-        shippingInfo: product.shippingInfo || "",
-        returnPolicy: product.returnPolicy || "",
-        customizationOptions: product.customizationOptions?.join(", ") || "",
-        giftWrappingAvailable: product.giftWrappingAvailable ? "Yes" : "No",
-        isFeatured: product.isFeatured ? "Yes" : "No",
-        isTrending: product.isTrending ? "Yes" : "No",
-      });
-    }
-  }, [product]);
-
+const EditProductModal = ({ modalopen, product, closed, onUpdate }) => {
   if (!modalopen || !product) return null;
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Updated Product Data:", formData);
-    closed();
+    const form = e.target;
+
+    const payload = {
+      title: form.title.value,
+      subtitle: form.subtitle.value,
+      description: form.description.value,
+      price: parseFloat(form.price.value),
+      offerPrice: parseFloat(form.offerPrice.value),
+      currency: form.currency.value,
+      sku: form.sku.value,
+      brand: form.brand.value,
+      category: form.category.value,
+      model: form.model.value,
+      height: form.height.value,
+      width: form.width.value,
+      length: form.length.value,
+      weight: form.weight.value,
+      gender: form.gender.value,
+      materials: form.materials.value
+        .split(",")
+        .map((m) => m.trim())
+        .filter(Boolean),
+      color: form.color.value,
+      diamondWeight: form.diamondWeight.value,
+      certification: form.certification.value,
+      warranty: form.warranty.value,
+      availability: form.availability.value,
+      stockQuantity: parseInt(form.stockQuantity.value),
+      purchaseCount: parseInt(form.purchaseCount.value),
+      careInstructions: form.careInstructions.value,
+      images: form.images.value
+        .split(",")
+        .map((i) => i.trim())
+        .filter(Boolean),
+      tags: form.tags.value
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean),
+      rating: parseFloat(form.rating.value),
+      shippingInfo: form.shippingInfo.value,
+      returnPolicy: form.returnPolicy.value,
+      customizationOptions: form.customizationOptions.value
+        .split(",")
+        .map((c) => c.trim())
+        .filter(Boolean),
+      giftWrappingAvailable: form.giftWrappingAvailable.checked,
+      isFeatured: form.isFeatured.checked,
+      isTrending: form.isTrending.checked,
+    };
+
+    try {
+      const res = await api.patch(`/api/products/${product._id}`, payload);
+      if (onUpdate) onUpdate(res.data); // Update parent state
+      closed();
+    } catch (err) {
+      console.error("Update failed:", err);
+      alert("Update failed, check console");
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex justify-center items-center p-4">
-      <div className="bg-white w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 bg-black/50 flex justify-center items-center p-4 overflow-auto">
+      <div className="bg-white w-full max-w-5xl rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center border-b px-6 py-4 sticky top-0 bg-white z-10">
-          <h2 className="text-2xl font-bold text-gray-800">
-            Edit Product Details
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-800">Edit Product</h2>
           <button
             onClick={closed}
             className="text-gray-500 hover:text-red-500 transition"
@@ -75,61 +83,388 @@ const EditProductModal = ({ modalopen, product, closed }) => {
           </button>
         </div>
 
-        {/* Scrollable Content */}
+        {/* Form */}
         <form
           onSubmit={handleSubmit}
-          className="overflow-y-auto px-6 py-4 grid grid-cols-2 gap-4 flex-1"
+          className="px-6 py-4 grid grid-cols-2 gap-4"
         >
-          {Object.keys(formData).map((key) => (
-            <div key={key} className="col-span-1">
-              <label className="block text-sm font-semibold text-gray-700 mb-1 capitalize">
-                {key.replace(/([A-Z])/g, " $1")}
-              </label>
+          {/** Title */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">Title</label>
+            <input
+              name="title"
+              defaultValue={product.title}
+              className="border p-2 w-full rounded"
+            />
+          </div>
 
-              {/* Description, care instructions, etc. as textarea */}
-              {[
-                "description",
-                "careInstructions",
-                "returnPolicy",
-                "shippingInfo",
-              ].includes(key) ? (
-                <textarea
-                  name={key}
-                  value={formData[key]}
-                  onChange={handleChange}
-                  rows={3}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none resize-none"
-                />
-              ) : (
-                <input
-                  type="text"
-                  name={key}
-                  value={formData[key]}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-                />
-              )}
-            </div>
-          ))}
+          {/** Subtitle */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">Subtitle</label>
+            <input
+              name="subtitle"
+              defaultValue={product.subtitle}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Description */}
+          <div className="col-span-2">
+            <label className="block text-sm font-semibold mb-1">
+              Description
+            </label>
+            <textarea
+              name="description"
+              defaultValue={product.description}
+              rows={3}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Price */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">Price</label>
+            <input
+              name="price"
+              defaultValue={product.price}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Offer Price */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">
+              Offer Price
+            </label>
+            <input
+              name="offerPrice"
+              defaultValue={product.offerPrice}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Currency */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">Currency</label>
+            <input
+              name="currency"
+              defaultValue={product.currency}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** SKU */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">SKU</label>
+            <input
+              name="sku"
+              defaultValue={product.sku}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Category */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">Category</label>
+            <input
+              name="category"
+              defaultValue={product.category}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Brand */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">Brand</label>
+            <input
+              name="brand"
+              defaultValue={product.brand}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Model */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">Model</label>
+            <input
+              name="model"
+              defaultValue={product.model}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Height */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">Height</label>
+            <input
+              name="height"
+              defaultValue={product.height}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Width */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">Width</label>
+            <input
+              name="width"
+              defaultValue={product.width}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Length */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">Length</label>
+            <input
+              name="length"
+              defaultValue={product.length}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Weight */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">Weight</label>
+            <input
+              name="weight"
+              defaultValue={product.weight}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Gender */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">Gender</label>
+            <input
+              name="gender"
+              defaultValue={product.gender}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Materials */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">
+              Materials (comma-separated)
+            </label>
+            <input
+              name="materials"
+              defaultValue={product.materials?.join(", ")}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Color */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">Color</label>
+            <input
+              name="color"
+              defaultValue={product.color}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Diamond Weight */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">
+              Diamond Weight
+            </label>
+            <input
+              name="diamondWeight"
+              defaultValue={product.diamondWeight}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Certification */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">
+              Certification
+            </label>
+            <input
+              name="certification"
+              defaultValue={product.certification}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Warranty */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">Warranty</label>
+            <input
+              name="warranty"
+              defaultValue={product.warranty}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Availability */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">
+              Availability
+            </label>
+            <input
+              name="availability"
+              defaultValue={product.availability}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Stock Quantity */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">
+              Stock Quantity
+            </label>
+            <input
+              name="stockQuantity"
+              defaultValue={product.stockQuantity}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Purchase Count */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">
+              Purchase Count
+            </label>
+            <input
+              name="purchaseCount"
+              defaultValue={product.purchaseCount}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Care Instructions */}
+          <div className="col-span-2">
+            <label className="block text-sm font-semibold mb-1">
+              Care Instructions
+            </label>
+            <textarea
+              name="careInstructions"
+              defaultValue={product.careInstructions}
+              rows={3}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Images */}
+          <div className="col-span-2">
+            <label className="block text-sm font-semibold mb-1">
+              Images (comma-separated URLs)
+            </label>
+            <input
+              name="images"
+              defaultValue={product.images?.join(", ")}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Tags */}
+          <div className="col-span-2">
+            <label className="block text-sm font-semibold mb-1">
+              Tags (comma-separated)
+            </label>
+            <input
+              name="tags"
+              defaultValue={product.tags?.join(", ")}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Rating */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">Rating</label>
+            <input
+              name="rating"
+              defaultValue={product.rating?.$numberDouble}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Shipping Info */}
+          <div className="col-span-2">
+            <label className="block text-sm font-semibold mb-1">
+              Shipping Info
+            </label>
+            <textarea
+              name="shippingInfo"
+              defaultValue={product.shippingInfo}
+              rows={2}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Return Policy */}
+          <div className="col-span-2">
+            <label className="block text-sm font-semibold mb-1">
+              Return Policy
+            </label>
+            <textarea
+              name="returnPolicy"
+              defaultValue={product.returnPolicy}
+              rows={2}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Customization Options */}
+          <div className="col-span-2">
+            <label className="block text-sm font-semibold mb-1">
+              Customization Options (comma-separated)
+            </label>
+            <input
+              name="customizationOptions"
+              defaultValue={product.customizationOptions?.join(", ")}
+              className="border p-2 w-full rounded"
+            />
+          </div>
+
+          {/** Checkboxes */}
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                name="giftWrappingAvailable"
+                defaultChecked={product.giftWrappingAvailable}
+              />{" "}
+              Gift Wrapping
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                name="isFeatured"
+                defaultChecked={product.isFeatured}
+              />{" "}
+              Featured
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                name="isTrending"
+                defaultChecked={product.isTrending}
+              />{" "}
+              Trending
+            </label>
+          </div>
+
+          {/* Footer */}
+          <div className="col-span-2 flex justify-end gap-3 mt-4">
+            <button
+              type="button"
+              onClick={closed}
+              className="px-5 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition font-semibold"
+            >
+              Save Changes
+            </button>
+          </div>
         </form>
-
-        {/* Footer */}
-        <div className="flex justify-end gap-3 p-4 border-t sticky bottom-0 bg-white">
-          <button
-            type="button"
-            onClick={closed}
-            className="px-5 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            onClick={handleSubmit}
-            className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition font-semibold"
-          >
-            Save Changes
-          </button>
-        </div>
       </div>
     </div>
   );
