@@ -11,57 +11,9 @@ const EditProductModal = ({ modalopen, product, closed, onUpdate }) => {
     e.preventDefault();
     const form = e.target;
 
-    const payload = {
-      title: form.title.value,
-      subtitle: form.subtitle.value,
-      description: form.description.value,
-      price: parseFloat(form.price.value),
-      offerPrice: parseFloat(form.offerPrice.value),
-      currency: form.currency.value,
-      sku: form.sku.value,
-      brand: form.brand.value,
-      category: form.category.value,
-      model: form.model.value,
-      height: form.height.value,
-      width: form.width.value,
-      length: form.length.value,
-      weight: form.weight.value,
-      gender: form.gender.value,
-      materials: form.materials.value
-        .split(",")
-        .map((m) => m.trim())
-        .filter(Boolean),
-      color: form.color.value,
-      diamondWeight: form.diamondWeight.value,
-      certification: form.certification.value,
-      warranty: form.warranty.value,
-      availability: form.availability.value,
-      stockQuantity: parseInt(form.stockQuantity.value),
-      purchaseCount: parseInt(form.purchaseCount.value),
-      careInstructions: form.careInstructions.value,
-      images: form.images.value
-        .split(",")
-        .map((i) => i.trim())
-        .filter(Boolean),
-      tags: form.tags.value
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean),
-      rating: parseFloat(form.rating.value),
-      shippingInfo: form.shippingInfo.value,
-      returnPolicy: form.returnPolicy.value,
-      customizationOptions: form.customizationOptions.value
-        .split(",")
-        .map((c) => c.trim())
-        .filter(Boolean),
-      giftWrappingAvailable: form.giftWrappingAvailable.checked,
-      isFeatured: form.isFeatured.checked,
-      isTrending: form.isTrending.checked,
-    };
-
     try {
       const res = await api.patch(`/api/products/${product._id}`, payload);
-      if (onUpdate) onUpdate(res.data); // Update parent state
+      if (onUpdate) onUpdate(res.data);
       closed();
     } catch (err) {
       console.error("Update failed:", err);

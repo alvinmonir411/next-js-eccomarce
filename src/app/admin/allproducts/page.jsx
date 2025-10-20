@@ -1,11 +1,11 @@
 "use client";
-
 import { useAuth } from "@/app/context/AuthContext";
 import React, { useEffect, useState } from "react";
 import api from "@/app/Utilitis/axiosInstance";
 import Loader from "@/app/Utilitis/Loader";
 import ProductViewModal from "@/app/Utilitis/ProductViewModal";
 import EditProductModal from "@/app/Utilitis/EditProductModal";
+import Swal from "sweetalert2";
 
 const Page = () => {
   const { user, loading: userLoading } = useAuth();
@@ -59,6 +59,21 @@ const Page = () => {
     );
   };
 
+  // handle delete
+  const handleDelete = async (id) => {
+    try {
+      const res = await api.delete(`/api/products/${id}`);
+      if (res.data) {
+        // Remove the deleted product from state
+        setProducts((prev) => prev.filter((p) => p._id !== id));
+        Swal.fire("Successfully deleted item ✅");
+      }
+    } catch (err) {
+      console.error("Delete failed:", err);
+      Swal.fire("Something went wrong 😢");
+    }
+  };
+
   const closeModal = () => {
     setSelectedProduct(null);
     setShowModal(false);
@@ -87,10 +102,7 @@ const Page = () => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {products.map((product) => (
-              <tr
-                key={product._id.$oid}
-                className="hover:bg-gray-50 transition"
-              >
+              <tr key={product._id} className="hover:bg-gray-50 transition">
                 <td>
                   <img
                     src={product.images[0]}
@@ -117,7 +129,12 @@ const Page = () => {
                   >
                     Edit
                   </button>
-                  <button className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition">
+                  <button
+                    onClick={() => {
+                      handleDelete(product._id);
+                    }}
+                    className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition"
+                  >
                     Delete
                   </button>
                 </td>
@@ -139,7 +156,7 @@ const Page = () => {
         modalopen={editModalOpen}
         product={editProduct}
         closed={() => setEditModalOpen(false)}
-        onUpdate={handleUpdate} // ✅ here's the sync magic
+        onUpdate={handleUpdate}
       />
     </div>
   );
