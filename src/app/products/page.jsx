@@ -36,10 +36,6 @@ export default function AllProductsPage() {
 
   return (
     <section className="mt-5 px-4 py-12 min-h-screen">
-      <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-12 text-gray-900">
-        Featured Products
-      </h1>
-
       <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {products.map((product) => (
           <div

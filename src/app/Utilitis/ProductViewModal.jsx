@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const ProductModal = ({ product, isOpen, onClose }) => {
   const [selectedImage, setSelectedImage] = useState(product?.images[0] || "");
-  const [activeTab, setActiveTab] = useState("Details"); 
+  const [activeTab, setActiveTab] = useState("Details");
 
   if (!isOpen || !product) return null;
 
@@ -80,7 +80,7 @@ const ProductModal = ({ product, isOpen, onClose }) => {
                   Stock: {product.stockQuantity.$numberInt}
                 </p>
                 <p className="text-yellow-500 font-semibold mb-2">
-                  ⭐ {product.rating.$numberDouble}
+                  ⭐ {product.rating?.$numberDouble}
                 </p>
 
                 {/* Tabs */}
