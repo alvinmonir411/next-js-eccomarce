@@ -114,7 +114,6 @@ const AdminProductPage = () => {
   const toggleTrending = async (id, isTrending) => {
     try {
       const res = await api.post(`/admin/trending?id=${id}`);
-      console.log(res.data); // prints { success: true, isTrending: true/false, message: "..." }
 
       if (res.data.success) {
         // Update local state

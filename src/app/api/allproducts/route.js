@@ -5,12 +5,10 @@ export async function GET(req) {
   try {
     // Verify admin user
     const userData = await verifyAdmin(req);
-    console.log("Verified Firebase user:", userData);
 
     // Get email from query
     const { searchParams } = new URL(req.url);
     const email = searchParams.get("email");
-    console.log("Query email:", email);
 
     // Connect to MongoDB
     const client = await clientPromise;

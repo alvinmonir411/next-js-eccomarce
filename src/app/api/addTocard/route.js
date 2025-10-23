@@ -13,7 +13,6 @@ export async function POST(req) {
     quantity = 1,
   } = await req.json();
 
-  console.log();
   const client = await clientPromise;
   const db = client.db(process.env.MONGO_DB);
 

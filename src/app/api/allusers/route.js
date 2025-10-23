@@ -4,11 +4,9 @@ import clientPromise from "@/app/lib/mongodb";
 export async function GET(req) {
   try {
     const userData = await verifyAdmin(req);
-    console.log("Verified Firebase user:", userData);
 
     const { searchParams } = new URL(req.url);
     const email = searchParams.get("email");
-    console.log(email);
 
     const client = await clientPromise;
     const db = client.db(process.env.MONGO_DB);

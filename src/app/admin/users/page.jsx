@@ -22,8 +22,6 @@ const page = () => {
           params: { email: user.email },
         });
 
-        console.log("Fetched Users:", res.data);
-
         // ✅ Safely handle different API response structures
         const userList = Array.isArray(res.data)
           ? res.data
