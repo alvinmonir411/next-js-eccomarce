@@ -1,46 +1,51 @@
 "use client";
-import axios from "axios";
+
 import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
+import axios from "axios";
 
-const FeaturedProducts = () => {
+const TrendingProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchFeatured = async () => {
+    const fetchTrending = async () => {
       try {
-        const res = await axios.get("/api/feturedProducts");
+        const res = await axios.get("/api/TrendingProducts");
         setProducts(res.data);
       } catch (err) {
-        console.error("Error fetching featured products:", err);
+        console.error("Error fetching trending products:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFeatured();
+    fetchTrending();
   }, []);
 
   if (loading) {
-    return <p className="text-center py-10">Loading featured products...</p>;
+    return (
+      <p className="text-center py-10 text-gray-600">
+        Loading trending products...
+      </p>
+    );
   }
 
   if (!products || products.length === 0) {
     return (
       <p className="text-center py-10 text-red-500 font-semibold text-xl">
-        No featured products found 😢
+        No trending products found 😢
       </p>
     );
   }
 
   return (
-    <div className="mt-10 bg-gray-100">
+    <div className="mt-10">
       <h1 className="py-10 text-xl md:text-4xl lg:text-6xl font-bold text-center">
-        <span className="text-secondary">Featured</span> Products
+        <span className="text-secondary">Trending</span> Products
       </h1>
 
-      <div className="container py-10 mx-auto grid gap-6 md:grid-cols-3 lg:grid-cols-4">
+      <div className="container mx-auto py-10 grid gap-6 md:grid-cols-3 lg:grid-cols-4">
         {products.map((product) => (
           <div
             key={product._id.$oid || product._id} // safe key
@@ -54,4 +59,4 @@ const FeaturedProducts = () => {
   );
 };
 
-export default FeaturedProducts;
+export default TrendingProducts;
