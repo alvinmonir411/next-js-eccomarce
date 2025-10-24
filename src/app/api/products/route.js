@@ -8,23 +8,7 @@ export async function GET(req) {
 
     const result = await db
       .collection(process.env.juyelarycollection)
-      .find(
-        {},
-        {
-          projection: {
-            images: 1,
-            _id: 1,
-            title: 1,
-            subtitle: 1,
-            currency: 1,
-            price: 1,
-            offerPrice: 1,
-            stockQuantity: 1,
-            rating: 1,
-            reviews: 1,
-          },
-        }
-      )
+      .find({})
       .toArray();
 
     return new Response(JSON.stringify(result), { status: 200 });

@@ -1,25 +1,42 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ProductCard from "../Utilitis/ProductCard";
-import Link from "next/link";
-import { ShoppingCart, Eye } from "lucide-react";
 
 export default function AllProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
+  // Fetch products safely
   useEffect(() => {
     fetch("/api/products")
       .then((res) => res.json())
       .then((data) => {
-        setProducts(data);
+        console.log("API response:", data);
+        // Handle if API returns object or array
+        const productsArray = Array.isArray(data) ? data : data.products || [];
+        setProducts(productsArray);
         setLoading(false);
       })
       .catch((err) => {
         console.error(err);
+        setProducts([]);
         setLoading(false);
       });
   }, []);
+
+  // Compute unique categories for filter buttons
+  const uniqueCategories = useMemo(() => {
+    if (!products || products.length === 0) return [];
+    const categories = products.map((p) => p.category).filter(Boolean); // remove undefined/null
+    return ["all", ...new Set(categories)];
+  }, [products]);
+
+  // Filter products by selected category
+  const filteredProducts = useMemo(() => {
+    if (selectedCategory === "all") return products;
+    return products.filter((p) => p.category === selectedCategory);
+  }, [products, selectedCategory]);
 
   if (loading) {
     return (
@@ -36,16 +53,31 @@ export default function AllProductsPage() {
 
   return (
     <section className="mt-5 px-4 py-12 min-h-screen">
+      {/* Category Filter Buttons */}
+      <div className="flex justify-center gap-3 flex-wrap mb-6">
+        {uniqueCategories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setSelectedCategory(cat)}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+              selectedCategory === cat
+                ? "bg-primary text-white"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Product Grid */}
       <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <div
             key={product._id}
             className="relative group rounded-xl overflow-hidden shadow hover:shadow-lg transition"
           >
-            {/* Product Card */}
             <ProductCard product={product} />
-
-            {/* Overlay Icons */}
           </div>
         ))}
       </div>
