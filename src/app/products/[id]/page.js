@@ -296,12 +296,11 @@ export default function ProductDetails({ params }) {
   };
 
   return (
-    <section className="container mx-auto px-4 py-12 md:py-20 bg-white">
-      <div className="grid lg:grid-cols-12 gap-10 md:gap-16">
-        {/* Left: Sticky Images (Span 5 columns) */}
-        <div className="lg:col-span-5 md:sticky md:top-20 h-fit">
+    <section className="container mx-auto px-4 md:px-8 py-12 md:py-20 bg-white">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16">
+        {/* Left: Images */}
+        <div className="md:col-span-5 md:sticky md:top-20">
           <div className="rounded-3xl overflow-hidden border border-gray-200 bg-gray-50 shadow-2xl hover:shadow-[0_15px_60px_rgba(0,0,0,0.1)] transition duration-700 transform hover:scale-[1.01]">
-            {/* Main Image */}
             <Image
               src={activeImage || "/placeholder.jpg"}
               alt={product.title}
@@ -312,8 +311,7 @@ export default function ProductDetails({ params }) {
             />
           </div>
 
-          {/* Thumbnail Gallery */}
-          <div className="flex gap-4 mt-6 justify-center flex-wrap">
+          <div className="flex gap-4 mt-4 justify-center flex-wrap">
             {product.images?.slice(0, 5).map((img, i) => (
               <div
                 key={i}
@@ -336,27 +334,24 @@ export default function ProductDetails({ params }) {
           </div>
         </div>
 
-        {/* Right: Scrollable Info (Span 7 columns) */}
-        <div className="lg:col-span-7 space-y-10">
-          {/* Product Title & Price Block */}
-          <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100 space-y-4">
-            {/* Title */}
-            <h1
-              className={`text-5xl md:text-6xl font-serif font-extrabold text-gray-900 leading-tight`}
-            >
+        {/* Right: Info */}
+        <div className="md:col-span-7 flex flex-col space-y-10">
+          {/* Title & Price */}
+          <div className="bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-gray-100 space-y-4">
+            <h1 className="text-3xl md:text-5xl font-serif font-extrabold text-gray-900 leading-tight">
               {product.title}
             </h1>
-            <p className="text-xl text-gray-500 italic font-light">
+            <p className="text-lg md:text-xl text-gray-500 italic font-light">
               {product.subtitle}
             </p>
 
-            {/* Rating and Reviews Summary */}
-            <div className="flex items-center gap-4 py-2 border-b border-gray-100">
+            {/* Rating */}
+            <div className="flex items-center gap-3 py-2 border-b border-gray-100">
               <div className={`flex items-center text-${ACCENT_COLOR}`}>
                 {Array.from({ length: 5 }, (_, i) => (
                   <Star
                     key={i}
-                    className={`w-5 h-5 ${
+                    className={`w-4 md:w-5 h-4 md:h-5 ${
                       i < Math.round(averageRating)
                         ? `fill-${ACCENT_COLOR}`
                         : "text-gray-300"
@@ -364,28 +359,28 @@ export default function ProductDetails({ params }) {
                   />
                 ))}
               </div>
-              <span className="text-lg font-semibold text-gray-700">
+              <span className="text-lg md:text-xl font-semibold text-gray-700">
                 {averageRating} / 5.0
               </span>
-              <span className="text-lg text-gray-500">
+              <span className="text-md md:text-lg text-gray-500">
                 ({totalReviews} Reviews)
               </span>
             </div>
 
             {/* Price */}
-            <div className="flex items-baseline gap-6 my-6">
+            <div className="flex flex-wrap items-baseline gap-4 my-4 md:my-6">
               <span
-                className={`text-4xl md:text-5xl font-extrabold text-${PRIMARY_COLOR}`}
+                className={`text-2xl md:text-4xl font-extrabold text-${PRIMARY_COLOR}`}
               >
                 {product.currency} {totalPrice.toFixed(2)}
               </span>
               {product.offerPrice && (
                 <>
-                  <span className="text-gray-400 line-through text-2xl">
+                  <span className="text-gray-400 line-through text-lg md:text-2xl">
                     {product.currency} {(product.price * quantity).toFixed(2)}
                   </span>
                   <span
-                    className={`text-xl font-bold bg-${ACCENT_COLOR} text-white px-3 py-1 rounded-full animate-pulse`}
+                    className={`text-sm md:text-lg font-bold bg-${ACCENT_COLOR} text-white px-2 py-1 rounded-full animate-pulse`}
                   >
                     {discountPercentage}% OFF
                   </span>
@@ -393,26 +388,23 @@ export default function ProductDetails({ params }) {
               )}
             </div>
 
-            {/* Action Group: Quantity & Add to Cart */}
-            <div className="flex flex-col sm:flex-row items-stretch gap-4 pt-6 border-t border-gray-100">
-              <div className="flex-shrink-0">
-                <QuantitySelector value={quantity} onChange={setQuantity} />
-              </div>
-              <div className="flex-grow">
-                <Addtocard
-                  product={product}
-                  quantity={quantity}
-                  buttonClass={`w-full py-4 text-xl font-semibold bg-${PRIMARY_COLOR} text-white rounded-xl shadow-lg hover:bg-opacity-90 transition transform hover:scale-[1.01] flex items-center justify-center`}
-                  icon={<ShoppingBag className="w-6 h-6 mr-3" />}
-                />
-              </div>
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row items-stretch gap-4 pt-4 sm:pt-6 border-t border-gray-100">
+              <QuantitySelector value={quantity} onChange={setQuantity} />
+              <Addtocard
+                product={product}
+                quantity={quantity}
+                buttonClass={`w-full py-3 sm:py-4 text-lg sm:text-xl font-semibold bg-${PRIMARY_COLOR} text-white rounded-xl shadow-lg hover:bg-opacity-90 transition transform hover:scale-[1.01] flex items-center justify-center`}
+                icon={
+                  <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
+                }
+              />
             </div>
           </div>
 
-          {/* Product Details & Reviews (Tabbed Interface) */}
-          <div className="mt-8">
-            {/* Tabs Header */}
-            <div className="flex border-b border-gray-200 bg-gray-50 rounded-t-xl overflow-hidden shadow-md">
+          {/* Tabs */}
+          <div className="mt-6 md:mt-8">
+            <div className="flex flex-wrap border-b border-gray-200 bg-gray-50 rounded-t-xl overflow-x-auto shadow-md">
               <TabButton
                 label="Description"
                 active={activeTab === "description"}
@@ -435,7 +427,7 @@ export default function ProductDetails({ params }) {
               />
             </div>
 
-            {/* Tabs Content - Renders the content based on the activeTab state */}
+            {/* Tab Content */}
             {renderTabContent()}
           </div>
         </div>

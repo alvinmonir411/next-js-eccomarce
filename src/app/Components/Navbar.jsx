@@ -56,13 +56,6 @@ const Navbar = () => {
 
         {/* Right side icons */}
         <div className="flex items-center gap-4 text-gray-700 relative">
-          <Link href="/search" className="hovarText">
-            <FaSearch size={20} />
-          </Link>
-          <Link href="/favorites" className="hovarText">
-            <FaHeart size={20} />
-          </Link>
-
           {/* Cart Icon with count */}
           <Link href="/CartPage" className="hovarText relative">
             <FaShoppingCart size={20} />

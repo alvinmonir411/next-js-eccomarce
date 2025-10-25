@@ -10,7 +10,12 @@ const FeaturedProducts = () => {
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        const res = await axios.get("/api/feturedProducts");
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/featuredProducts`,
+          {
+            cache: "no-store",
+          }
+        );
         setProducts(res.data);
       } catch (err) {
         console.error("Error fetching featured products:", err);

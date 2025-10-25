@@ -40,11 +40,6 @@ const ProductCard = ({ product }) => {
           >
             <Eye size={16} /> Quick View
           </Link>
-
-          {/* Wishlist */}
-          <button className="p-2 bg-white rounded-full shadow hover:bg-red-500 hover:text-white transition">
-            <Heart size={16} />
-          </button>
         </div>
 
         {/* Discount Badge */}
